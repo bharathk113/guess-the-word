@@ -1,0 +1,589 @@
+:root {
+    /* Premium Palette */
+    --color-background: #0f172a;
+    --color-surface: rgba(255, 255, 255, 0.1);
+    --color-text: #ffffff;
+    --color-text-muted: rgba(255, 255, 255, 0.7);
+
+    --color-correct: #4ade80;
+    /* Bright Green */
+    --color-present: #facc15;
+    /* Bright Yellow/Gold */
+    --color-absent: rgba(255, 255, 255, 0.15);
+
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-shadow: rgba(0, 0, 0, 0.3);
+
+    /* Typography */
+    --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Animations */
+    --anim-speed: 200ms;
+}
+
+body.light-mode {
+    --color-background: #f8fafc;
+    /* Slate 50 */
+    --color-surface: rgba(0, 0, 0, 0.05);
+    /* Dark glass */
+    --color-text: #1e293b;
+    /* Slate 800 */
+    --color-text-muted: rgba(30, 41, 59, 0.6);
+
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-shadow: rgba(0, 0, 0, 0.1);
+
+    --color-absent: rgba(0, 0, 0, 0.15);
+    /* Slightly darker for visibility */
+
+    /* Background Gradient for Light Mode */
+    background-color: var(--color-background);
+    background-image:
+        radial-gradient(at 0% 0%, #e0f2fe 0, transparent 50%),
+        radial-gradient(at 50% 0%, #dbeafe 0, transparent 50%),
+        radial-gradient(at 100% 0%, #f0f9ff 0, transparent 50%);
+}
+
+/* Light Mode Overrides for Specific Components */
+body.light-mode .glass-panel {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .btn-outline {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--color-text);
+}
+
+body.light-mode .btn-outline:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: var(--color-text);
+}
+
+body.light-mode .tile {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--color-text);
+}
+
+body.light-mode .key {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--color-text);
+}
+
+/* Light Mode Tile Status Colors - CRITICAL FIX */
+body.light-mode .tile[data-status="correct"],
+body.light-mode .key[data-status="correct"] {
+    color: white;
+    /* Green is dark enough for white text? Maybe */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .tile[data-status="present"],
+body.light-mode .key[data-status="present"] {
+    color: black;
+    /* Yellow needs black text */
+}
+
+body.light-mode .tile[data-status="absent"],
+body.light-mode .key[data-status="absent"] {
+    background: rgba(0, 0, 0, 0.1);
+    /* Light gray bg */
+    color: var(--color-text);
+    /* KEEP TEXT DARK for visibility */
+}
+
+body.light-mode .btn-back-float {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--color-text);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure modal text is readable */
+body.light-mode .modal-overlay {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--color-background);
+    background-image:
+        radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+    background-attachment: fixed;
+    background-size: cover;
+    color: var(--color-text);
+    min-height: 100dvh;
+    /* Dynamic viewport height */
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    /* No scroll */
+}
+
+/* Glassmorphism Util */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+}
+
+#app {
+    width: 100%;
+    height: 100dvh;
+    /* Strict Height */
+    max-width: 800px;
+    /* Slight increase for landscape */
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    /* Full Height */
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    /* Distribute space */
+    padding: 10px;
+    /* Reduced padding */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.screen.active {
+    display: flex;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* Titles */
+h1,
+h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.logo-large {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #a5f3fc 0%, #4ade80 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 20px rgba(74, 222, 128, 0.3));
+}
+
+/* Splash Screen */
+#splash-screen {
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background: var(--color-background);
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--color-correct);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Board */
+.game-board {
+    display: grid;
+    gap: 6px;
+    /* Tighter gap */
+    padding: 5px;
+    width: auto;
+    /* Allow width to shrink */
+    max-width: 100%;
+
+    flex: 1;
+    /* Grow to fill space */
+    min-height: 0;
+    /* Allow shrinking below content size! Essential */
+    aspect-ratio: 5 / 6;
+    /* Maintain Wordle-ish aspect ratio */
+
+    margin: 0 auto;
+    align-content: center;
+    /* Center grid content */
+}
+
+.tile {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.tile[data-status="correct"] {
+    background: var(--color-correct);
+    border-color: var(--color-correct);
+    box-shadow: 0 0 15px var(--color-correct);
+}
+
+.tile[data-status="present"] {
+    background: var(--color-present);
+    border-color: var(--color-present);
+    box-shadow: 0 0 15px var(--color-present);
+}
+
+.tile[data-status="absent"] {
+    background: var(--color-absent);
+    border-color: transparent;
+}
+
+/* Keyboard */
+.keyboard {
+    width: 100%;
+    max-width: 500px;
+    flex-shrink: 0;
+    /* Don't shrink too much */
+    margin-top: 5px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 20px;
+    /* Safe area */
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+}
+
+.key {
+    flex: 1;
+    height: 48px;
+    /* Slightly smaller base height */
+    max-height: 8vh;
+    /* Dynamic height cap */
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    font-size: 1.1rem;
+    transition: transform 0.1s, background 0.2s;
+}
+
+.key:active {
+    transform: scale(0.95);
+}
+
+.key-wide {
+    flex: 1.5;
+    font-size: 0.9rem;
+}
+
+.key[data-status="correct"] {
+    background: var(--color-correct);
+}
+
+.key[data-status="present"] {
+    background: var(--color-present);
+}
+
+.key[data-status="absent"] {
+    background: var(--color-absent);
+    opacity: 0.5;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-back-float {
+    font-family: var(--font-family);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    color: #000;
+    font-weight: 700;
+    padding: 16px 32px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+    font-size: 1.1rem;
+    width: 80%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #facc15, #eab308);
+    color: #000;
+    font-weight: 700;
+    padding: 16px 32px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
+    font-size: 1.1rem;
+    width: 80%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-back-float {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-back-float:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-weight: 700;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    width: 80%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+}
+
+.daily-item {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.daily-item .status {
+    font-weight: normal;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.daily-item .status.done {
+    opacity: 1;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 9999 !important;
+    /* Always on top */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex !important;
+    /* Force flex when active */
+}
+
+.modal-content {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-weight: 700;
+    z-index: 2000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+.flip {
+    animation: flip 0.6s ease;
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateX(0);
+    }
+
+    50% {
+        transform: rotateX(90deg);
+    }
+
+    100% {
+        transform: rotateX(0);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Landscape / Tablet Responsive */
+/* Landscape / Tablet Responsive - KEEP PORTRAIT CENTERED */
+@media (orientation: landscape) and (min-width: 600px) {
+    body {
+        background-color: #000;
+        /* Dark borders for letterboxing benefit */
+    }
+
+    #app {
+        /* Centered Mobile View */
+        max-width: 450px;
+        /* Force mobile width */
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        background: var(--color-background);
+        /* Ensure app bg is set */
+    }
+
+    /* Keep screen column */
+    .screen {
+        flex-direction: column;
+    }
+
+    /* Ensure board fits vertically in short landscape screens */
+    .game-board {
+        height: auto;
+        max-height: 55vh;
+        /* Limit height so keyboard fits */
+        width: auto;
+        aspect-ratio: 5/6;
+    }
+}
