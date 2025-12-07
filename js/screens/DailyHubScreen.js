@@ -30,19 +30,19 @@ window.DailyHubScreen = class DailyHubScreen {
             </button>
             <h2 style="margin-top:40px;">Daily Challenge</h2>
             <div class="daily-list" style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:400px;">
-                <button class="glass-panel daily-item" data-len="5" style="width:100%; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${completed.includes(5) ? '#4ade80' : 'rgba(255,255,255,0.1)'}; background:${completed.includes(5) ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)'}; cursor:pointer; text-align:left; transition:transform 0.1s;">
+                <button class="glass-panel daily-item ${completed.includes(5) ? 'completed' : ''}" data-len="5">
                     <span style="font-size:1.2rem; font-weight:700;">5 Letters</span>
                     ${getStatus(5)}
                 </button>
-                <button class="glass-panel daily-item" data-len="6" style="width:100%; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${completed.includes(6) ? '#4ade80' : 'rgba(255,255,255,0.1)'}; background:${completed.includes(6) ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)'}; cursor:pointer; text-align:left; transition:transform 0.1s;">
+                <button class="glass-panel daily-item ${completed.includes(6) ? 'completed' : ''}" data-len="6">
                     <span style="font-size:1.2rem; font-weight:700;">6 Letters</span>
                     ${getStatus(6)}
                 </button>
-                <button class="glass-panel daily-item" data-len="7" style="width:100%; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${completed.includes(7) ? '#4ade80' : 'rgba(255,255,255,0.1)'}; background:${completed.includes(7) ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)'}; cursor:pointer; text-align:left; transition:transform 0.1s;">
+                <button class="glass-panel daily-item ${completed.includes(7) ? 'completed' : ''}" data-len="7">
                     <span style="font-size:1.2rem; font-weight:700;">7 Letters</span>
                     ${getStatus(7)}
                 </button>
-                <button class="glass-panel daily-item" data-len="8" style="width:100%; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${completed.includes(8) ? '#4ade80' : 'rgba(255,255,255,0.1)'}; background:${completed.includes(8) ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)'}; cursor:pointer; text-align:left; transition:transform 0.1s;">
+                <button class="glass-panel daily-item ${completed.includes(8) ? 'completed' : ''}" data-len="8">
                     <span style="font-size:1.2rem; font-weight:700;">8 Letters</span>
                     ${getStatus(8)}
                 </button>
@@ -63,7 +63,7 @@ window.DailyHubScreen = class DailyHubScreen {
         });
 
         this.element.querySelector('#btn-back-daily').onclick = () => {
-            if (window.Navigation) window.Navigation.back();
+            if (window.Navigation) window.Navigation.show('home');
         };
     }
 

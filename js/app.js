@@ -128,7 +128,22 @@ window.addEventListener('load', async () => {
     const btnBack = document.createElement('button');
     btnBack.className = 'btn-back-float';
     btnBack.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>';
-    btnBack.onclick = () => window.Navigation.back();
+    btnBack.onclick = () => {
+        // UP Navigation Logic
+        // If Daily Mode -> Go to Daily Hub
+        // If General Mode -> Go to Length Select (technically the setup screen) or Home?
+        const currentMode = gameWrapper.dataset.mode || 'general';
+        if (currentMode === 'daily') {
+            window.Navigation.show('daily-hub');
+        } else {
+            // Check if Length Screen exists, otherwise Home
+            if (window.Navigation.screens['length-select']) {
+                window.Navigation.show('length-select');
+            } else {
+                window.Navigation.show('home');
+            }
+        }
+    };
     gameWrapper.appendChild(btnBack);
 
     // --- GAME LAUNCHER LOGIC ---
@@ -166,15 +181,24 @@ window.addEventListener('load', async () => {
 
             if (difficulty && category === 'general') {
                 const total = allSolutions.length;
-                const bucketSize = Math.floor(total / 5);
-                // 1=Easy (Top), 5=Impossible (Bottom)
-                // Assuming list is sorted by frequency (Common -> Rare)
-                const start = (difficulty - 1) * bucketSize;
-                let end = start + bucketSize;
-                if (difficulty === 5) end = total; // Ensure we get the tail
 
-                pool = allSolutions.slice(start, end);
-                console.log(`Difficulty ${difficulty}: Picking from range ${start}-${end} (Total: ${total})`);
+                // Difficulty Thresholds: Novice(5%), Easy(5%), Moderate(5%), Hard(5%), Impossible(80%)
+                // Cumulative: 5%, 10%, 15%, 20%, 100%
+                const thresholds = [0, 0.05, 0.10, 0.15, 0.20, 1.0];
+
+                // difficulty is 1-based (1..5)
+                const startPct = thresholds[difficulty - 1];
+                const endPct = thresholds[difficulty];
+
+                const start = Math.floor(total * startPct);
+                const end = Math.floor(total * endPct);
+
+                // Ensure we have at least some words if total is very small
+                if (end > start) {
+                    pool = allSolutions.slice(start, end);
+                }
+
+                console.log(`Difficulty ${difficulty}: Picking from range ${start}-${end} (Total: ${total}) [${Math.round((endPct - startPct) * 100)}% slice]`);
             }
 
             if (pool.length === 0) pool = allSolutions; // Fallback
@@ -182,18 +206,23 @@ window.addEventListener('load', async () => {
         }
 
         let restoring = false;
+        let savedState = null;
         if (!forcedSolution) { // Don't restore if we are forcing a retry
-            const savedState = PersistenceManager.loadGameState();
+            savedState = PersistenceManager.loadGameState();
             // If saved game exists and solution matches (same day/mode), restore it
             if (savedState && savedState.solution === solution && savedState.status === 'IN_PROGRESS') {
                 console.log("Resuming saved game...");
                 restoring = true;
             } else {
                 PersistenceManager.clearGameState();
+                savedState = null; // Ensure we don't try to use invalid state
             }
         }
 
         console.log(`Starting game: ${length} letters. Solution: ${solution}`);
+
+        // Store metadata for navigation
+        gameWrapper.dataset.mode = mode;
 
         // Update Header
         header.textContent = mode === 'daily' ? `Daily Challenge` : `Guess the Word`;

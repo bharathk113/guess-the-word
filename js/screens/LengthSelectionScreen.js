@@ -22,7 +22,7 @@ window.LengthScreen = class LengthScreen {
                     </div>
                     <input type="range" id="diff-slider" min="1" max="5" value="2" style="width:100%; cursor:pointer;">
                     <div style="display:flex; justify-content:space-between; font-size:0.7rem; opacity:0.6; margin-top:5px;">
-                        <span>Easy</span>
+                        <span>Novice</span>
                         <span>Imp.</span>
                     </div>
                 </div>
@@ -30,7 +30,7 @@ window.LengthScreen = class LengthScreen {
         }
 
         this.element.innerHTML = `
-            <button class="btn-back-float" id="btn-back-len" style="top:20px; left:20px;">
+            <button class="btn-back-float" id="btn-back-len" style="top:20px; left:20px;" onclick="window.Navigation.show('category-select')">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
             </button>
             <h2 style="margin-top:40px;">Select Length</h2>
@@ -56,11 +56,11 @@ window.LengthScreen = class LengthScreen {
 
         if (slider && label) {
             const labels = {
-                1: { text: "Easy", color: "#4ade80" },      // Green
-                2: { text: "Moderate", color: "#facc15" },  // Yellow
-                3: { text: "Hard", color: "#fb923c" },      // Orange
-                4: { text: "Severe", color: "#f87171" },    // Red
-                5: { text: "Impossible", color: "#ef4444" } // Deep Red
+                1: { text: "Novice (Top 5%)", color: "#4ade80" },      // Green
+                2: { text: "Easy (5-10%)", color: "#a3e635" },         // Light Green
+                3: { text: "Moderate (10-15%)", color: "#facc15" },    // Yellow
+                4: { text: "Hard (15-20%)", color: "#fb923c" },        // Orange
+                5: { text: "Impossible (20%+)", color: "#ef4444" }     // Red
             };
 
             const updateLabel = () => {
@@ -89,7 +89,7 @@ window.LengthScreen = class LengthScreen {
         });
 
         this.element.querySelector('#btn-back-len').onclick = () => {
-            window.Navigation.back();
+            window.Navigation.show('category-select');
         };
     }
 

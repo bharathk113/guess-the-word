@@ -75,9 +75,13 @@ body.light-mode .key {
 /* Light Mode Tile Status Colors - CRITICAL FIX */
 body.light-mode .tile[data-status="correct"],
 body.light-mode .key[data-status="correct"] {
+    background: var(--color-correct);
+    /* Force Green Background */
+    border-color: var(--color-correct);
     color: white;
-    /* Green is dark enough for white text? Maybe */
+    /* White text looks good on Green */
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
 }
 
 body.light-mode .tile[data-status="present"],
@@ -194,7 +198,10 @@ h2 {
 }
 
 .logo-large {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    /* Responsive Font Size */
+    white-space: nowrap;
+    /* Prevent Wrapping */
     font-weight: 900;
     background: linear-gradient(135deg, #a5f3fc 0%, #4ade80 100%);
     background-clip: text;
@@ -452,9 +459,63 @@ h2 {
     transform: scale(0.95);
 }
 
+/* Daily Hub List Items */
 .daily-item {
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    padding: 20px 25px;
+    /* Restoration of size */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.1s, background-color 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+    /* Default Dark Mode */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+    margin-bottom: 15px;
+    border-radius: 12px;
+}
+
+.daily-item:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.daily-item.completed {
+    background: rgba(74, 222, 128, 0.1);
+    border-color: #4ade80;
+}
+
+/* Light Mode Overrides */
+body.light-mode .daily-item {
+    background: white;
+    /* Solid white background */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+    /* Dark Slate Text for Contrast */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-shadow: none;
+    /* Remove shadows */
+}
+
+body.light-mode .daily-item:hover {
+    background: #f8fafc;
+    transform: scale(1.02);
+}
+
+body.light-mode .daily-item.completed {
+    background: #ecfdf5;
+    /* Light Green */
+    border-color: #10b981;
+    color: #064e3b;
+    /* Dark Green Text */
+}
+
+body.light-mode .daily-item .status.done {
+    color: #15803d;
+    font-weight: 800;
 }
 
 .daily-item .status {

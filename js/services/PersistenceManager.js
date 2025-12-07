@@ -29,11 +29,11 @@ window.PersistenceManager = class PersistenceManager {
                 daily: { played: 0, won: 0 }
             },
             difficultyStats: {
-                1: { played: 0, won: 0 }, // Easy
-                2: { played: 0, won: 0 }, // Moderate
-                3: { played: 0, won: 0 }, // Hard
-                4: { played: 0, won: 0 }, // Severe
-                5: { played: 0, won: 0 }  // Impossible
+                1: { played: 0, won: 0 }, // Novice (Top 5%)
+                2: { played: 0, won: 0 }, // Easy (5-10%)
+                3: { played: 0, won: 0 }, // Moderate (10-15%)
+                4: { played: 0, won: 0 }, // Hard (15-20%)
+                5: { played: 0, won: 0 }  // Impossible (20%+)
             },
             lengthStats: {
                 5: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 } },

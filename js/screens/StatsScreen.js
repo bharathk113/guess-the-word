@@ -75,7 +75,7 @@ window.StatsScreen = class StatsScreen {
 
         let breakdownHtml = '';
         if (showTables) {
-            const diffLabels = { 1: "Easy", 2: "Moderate", 3: "Hard", 4: "Severe", 5: "Impossible" };
+            const diffLabels = { 1: "Novice", 2: "Easy", 3: "Moderate", 4: "Hard", 5: "Impossible" };
             let diffRows = '';
             if (stats.difficultyStats) {
                 for (let i = 1; i <= 5; i++) {
@@ -126,7 +126,7 @@ window.StatsScreen = class StatsScreen {
         };
 
         this.element.innerHTML = `
-            <button class="btn-back-float" style="top:20px; left:20px;" onclick="window.Navigation.back()">
+            <button class="btn-back-float" style="top:20px; left:20px;" onclick="window.Navigation.show('home')">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
             </button>
             
@@ -168,10 +168,9 @@ window.StatsScreen = class StatsScreen {
                 ${createBar(displayStats.guesses[4], maxGuess, '4')}
                 ${createBar(displayStats.guesses[5], maxGuess, '5')}
                 ${createBar(displayStats.guesses[6], maxGuess, '6')}
-                ${/* Handle 7,8,9 guesses if length > 6 */ ''}
-                ${this.activeTab >= 6 ? createBar(displayStats.guesses[7] || 0, maxGuess, '7') : ''}
-                ${this.activeTab >= 7 ? createBar(displayStats.guesses[8] || 0, maxGuess, '8') : ''}
-                ${this.activeTab >= 8 ? createBar(displayStats.guesses[9] || 0, maxGuess, '9') : ''}
+                ${createBar(displayStats.guesses[7] || 0, maxGuess, '7')}
+                ${createBar(displayStats.guesses[8] || 0, maxGuess, '8')}
+                ${createBar(displayStats.guesses[9] || 0, maxGuess, '9')}
                 ${createBar(displayStats.guesses.fail, maxGuess, 'X')}
             </div>
 

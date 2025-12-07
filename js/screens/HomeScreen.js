@@ -17,12 +17,27 @@ window.HomeScreen = class HomeScreen {
         const themeIcon = settings.theme === 'light' ? '☀️' : '🌙';
 
         const headerHtml = `
-            <div style="width:100%; display:flex; justify-content:space-between; padding:10px 20px; align-items:center;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button id="btn-theme-toggle" class="btn-outline" style="margin:0; padding:6px 12px; border-radius:50%; font-size:1.2rem; border:none;">${themeIcon}</button>
-                    <div id="user-display" style="font-weight:bold; font-size:0.9rem; opacity:0.8;">Guest</div>
+            <div style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:15px 20px;">
+                
+                <!-- Left: Theme Toggle (Fixed Width Container) -->
+                <div style="flex:0 0 80px; display:flex; justify-content:flex-start;">
+                    <button id="btn-theme-toggle" class="glass-panel" style="width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; border:1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size:1.2rem;">${themeIcon}</span>
+                    </button>
                 </div>
-                <button id="btn-login-action" class="btn-outline" style="margin:0; font-size:0.8rem; padding:8px 16px; width:auto; border-radius:20px;">Login</button>
+
+                <!-- Center: User Profile (Flex 1) -->
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                     <div id="user-display" style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+                        <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">👤</div>
+                        <div style="font-weight:bold; font-size:0.9rem; opacity:0.9;">Guest</div>
+                     </div>
+                </div>
+
+                <!-- Right: Login Action (Fixed Width Container) -->
+                <div style="flex:0 0 80px; display:flex; justify-content:flex-end;">
+                    <button id="btn-login-action" class="btn-outline" style="margin:0; font-size:0.8rem; padding:0 15px; border-radius:20px; height:40px; min-width:70px; display:flex; align-items:center; justify-content:center;">Login</button>
+                </div>
             </div>
         `;
 
@@ -60,8 +75,11 @@ window.HomeScreen = class HomeScreen {
                 <button class="btn-outline" id="btn-stats" style="width:auto; padding:10px 20px; margin-top:10px;">
                     📊 Statistics
                 </button>
-                <div style="margin-top:20px; text-align:center; font-size:0.8rem; opacity:0.5;">
-                    v11 - Premium Edition
+                <div style="margin-top:20px; text-align:center; font-size:0.8rem; opacity:0.6;">
+                    &copy; BR Sports<br>
+                    <div style="margin-top:5px; font-size:0.75rem;">
+                        Play <a href="https://bharathk113.github.io/tappy-bird" target="_blank" style="color:var(--color-correct); text-decoration:none; font-weight:bold;">Tappy Bird</a>
+                    </div>
                 </div>
             </div>
         `;
@@ -72,7 +90,12 @@ window.HomeScreen = class HomeScreen {
             const user = window.firebaseManager.user;
             const userDisplay = this.element.querySelector('#user-display');
             const btnLogin = this.element.querySelector('#btn-login-action');
-            if (userDisplay) userDisplay.innerHTML = `<img src="${user.photoURL}" style="width:24px;border-radius:50%;vertical-align:middle;margin-right:8px"> ${user.displayName.split(' ')[0]}`;
+            if (userDisplay) {
+                userDisplay.innerHTML = `
+                    <img src="${user.photoURL}" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); object-fit:cover;">
+                    <div style="font-weight:bold; font-size:0.9rem; opacity:0.9;">${user.displayName.split(' ')[0]}</div>
+                `;
+            }
             if (btnLogin) btnLogin.textContent = "Logout";
         }
     }
