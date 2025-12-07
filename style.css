@@ -354,7 +354,23 @@ h2 {
     font-family: var(--font-family);
     border: none;
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: transform 0.1s, background 0.2s;
+    user-select: none;
+}
+
+/* Centered Button Util */
+.btn-primary,
+.btn-secondary,
+.btn-outline {
+    width: 80%;
+    max-width: 300px;
+    margin: 0 auto 15px auto;
+    /* Centered with bottom margin */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
 }
 
 .btn-primary {
@@ -365,13 +381,6 @@ h2 {
     border-radius: 30px;
     box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
     font-size: 1.1rem;
-    width: 80%;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
 }
 
 .btn-secondary {
@@ -382,13 +391,23 @@ h2 {
     border-radius: 30px;
     box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
     font-size: 1.1rem;
-    width: 80%;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-weight: 700;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    /* Slight adjust */
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
 }
 
 .btn-back-float {
@@ -403,37 +422,34 @@ h2 {
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     font-size: 1.2rem;
+    /* Fallback */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 50;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    padding: 0;
+    /* Critical for centering */
+}
+
+.btn-back-float svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
+    transform: translateX(-1px);
+    /* Optical correction for arrow */
 }
 
 .btn-back-float:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
-.btn-outline {
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    font-weight: 700;
-    padding: 14px 30px;
-    border-radius: 30px;
-    font-size: 1.1rem;
-    width: 80%;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.btn-outline:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: #fff;
+.btn-back-float:active {
+    transform: scale(0.95);
 }
 
 .daily-item {
@@ -552,6 +568,57 @@ h2 {
     80% {
         transform: translateX(5px);
     }
+}
+
+/* Glassmorphism Range Slider */
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* Thumb */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    background: var(--color-correct);
+    /* Green thumb */
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+    cursor: pointer;
+    margin-top: -10px;
+    /* offset */
+    transition: transform 0.1s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+body.light-mode input[type=range]::-webkit-slider-thumb {
+    border-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Track */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode input[type=range]::-webkit-slider-runnable-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Landscape / Tablet Responsive */

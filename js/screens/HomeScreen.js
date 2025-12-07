@@ -57,6 +57,9 @@ window.HomeScreen = class HomeScreen {
                 <button class="btn-secondary" id="btn-unlimited">
                     <span class="icon">♾️</span> Unlimited Mode
                 </button>
+                <button class="btn-outline" id="btn-stats" style="width:auto; padding:10px 20px; margin-top:10px;">
+                    📊 Statistics
+                </button>
                 <div style="margin-top:20px; text-align:center; font-size:0.8rem; opacity:0.5;">
                     v11 - Premium Edition
                 </div>
@@ -93,6 +96,13 @@ window.HomeScreen = class HomeScreen {
         if (btnUnlimited) {
             btnUnlimited.addEventListener('click', () => {
                 window.Navigation.show('category-select');
+            });
+        }
+
+        const btnStats = this.element.querySelector('#btn-stats');
+        if (btnStats) {
+            btnStats.addEventListener('click', () => {
+                window.Navigation.show('stats-screen');
             });
         }
 

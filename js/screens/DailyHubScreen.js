@@ -25,7 +25,9 @@ window.DailyHubScreen = class DailyHubScreen {
         };
 
         this.element.innerHTML = `
-            <button class="btn-back-float" id="btn-back-daily" style="top:20px; left:20px;">&#8592;</button>
+            <button class="btn-back-float" id="btn-back-daily" style="top:20px; left:20px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            </button>
             <h2 style="margin-top:40px;">Daily Challenge</h2>
             <div class="daily-list" style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:400px;">
                 <button class="glass-panel daily-item" data-len="5" style="width:100%; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${completed.includes(5) ? '#4ade80' : 'rgba(255,255,255,0.1)'}; background:${completed.includes(5) ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)'}; cursor:pointer; text-align:left; transition:transform 0.1s;">
@@ -61,7 +63,7 @@ window.DailyHubScreen = class DailyHubScreen {
         });
 
         this.element.querySelector('#btn-back-daily').onclick = () => {
-            if (window.Navigation) window.Navigation.show('home');
+            if (window.Navigation) window.Navigation.back();
         };
     }
 

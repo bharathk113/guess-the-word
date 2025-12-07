@@ -95,6 +95,13 @@ window.addEventListener('load', async () => {
         window.Navigation.register('daily-hub', dailyScreen.getElement());
     }
 
+    // Stats Screen
+    if (window.StatsScreen) {
+        const statsScreen = new window.StatsScreen();
+        container.appendChild(statsScreen.getElement());
+        window.Navigation.register('stats-screen', statsScreen.getElement());
+    }
+
     // Game Screen (Wrapper)
     const gameWrapper = document.createElement('div');
     gameWrapper.id = 'game-screen';
@@ -120,12 +127,12 @@ window.addEventListener('load', async () => {
     // Back Button for Game (Floating)
     const btnBack = document.createElement('button');
     btnBack.className = 'btn-back-float';
-    btnBack.innerHTML = '&#8592;'; // Left Arrow
-    btnBack.onclick = () => window.Navigation.show('home');
+    btnBack.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>';
+    btnBack.onclick = () => window.Navigation.back();
     gameWrapper.appendChild(btnBack);
 
     // --- GAME LAUNCHER LOGIC ---
-    window.StartGame = async (category = 'general', length = 5, mode = 'general', forcedSolution = null) => {
+    window.StartGame = async (category = 'general', length = 5, mode = 'general', forcedSolution = null, difficulty = null) => {
         boardContainer.innerHTML = '';
         keyboardContainer.innerHTML = '';
 
@@ -148,8 +155,30 @@ window.addEventListener('load', async () => {
         } else if (mode === 'daily') {
             solution = WordService.getDailySolution(data.solutions, length);
         } else {
-            // General Random
-            solution = data.solutions[Math.floor(Math.random() * data.solutions.length)];
+            // General Random with Difficulty
+            const allSolutions = data.solutions;
+
+            // Default to 'Moderate' (2) or random if not provided, but usually provided now.
+            // If difficulty is null (e.g. from generic retry), pick random from entire pool? 
+            // Or default to 2? Let's default to full random if null, or respect passed value.
+
+            let pool = allSolutions;
+
+            if (difficulty && category === 'general') {
+                const total = allSolutions.length;
+                const bucketSize = Math.floor(total / 5);
+                // 1=Easy (Top), 5=Impossible (Bottom)
+                // Assuming list is sorted by frequency (Common -> Rare)
+                const start = (difficulty - 1) * bucketSize;
+                let end = start + bucketSize;
+                if (difficulty === 5) end = total; // Ensure we get the tail
+
+                pool = allSolutions.slice(start, end);
+                console.log(`Difficulty ${difficulty}: Picking from range ${start}-${end} (Total: ${total})`);
+            }
+
+            if (pool.length === 0) pool = allSolutions; // Fallback
+            solution = pool[Math.floor(Math.random() * pool.length)];
         }
 
         let restoring = false;

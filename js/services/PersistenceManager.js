@@ -17,9 +17,30 @@ window.PersistenceManager = class PersistenceManager {
             guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 },
             dailyProgress: {
                 date: null,      // "YYYY-MM-DD"
-                completed: []    // [5, 6, 7, 8]
+                completed: [],   // [5, 6, 7, 8]
+                attempted: [],   // [5, 6, 7, 8]
+                streakIncremented: false
             },
-            lastPlayedDate: null // For missed day checks
+            lastPlayedDate: null, // For missed day checks
+
+            // New Granular Stats
+            categoryStats: {
+                general: { played: 0, won: 0 },
+                daily: { played: 0, won: 0 }
+            },
+            difficultyStats: {
+                1: { played: 0, won: 0 }, // Easy
+                2: { played: 0, won: 0 }, // Moderate
+                3: { played: 0, won: 0 }, // Hard
+                4: { played: 0, won: 0 }, // Severe
+                5: { played: 0, won: 0 }  // Impossible
+            },
+            lengthStats: {
+                5: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 } },
+                6: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, fail: 0 } },
+                7: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, fail: 0 } },
+                8: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, fail: 0 } }
+            }
         };
     }
 
@@ -29,7 +50,28 @@ window.PersistenceManager = class PersistenceManager {
 
         // Migration: Ensure dailyProgress exists if loading old stats
         if (!stats.dailyProgress) {
-            stats.dailyProgress = { date: null, completed: [] };
+            stats.dailyProgress = { date: null, completed: [], attempted: [] };
+        } else if (!stats.dailyProgress.attempted) {
+            stats.dailyProgress.attempted = []; // Migration for attempted
+        }
+
+        // Migration: Granular Stats
+        if (!stats.categoryStats) {
+            stats.categoryStats = { general: { played: 0, won: 0 }, daily: { played: 0, won: 0 } };
+        }
+        if (!stats.difficultyStats) {
+            stats.difficultyStats = {
+                1: { played: 0, won: 0 }, 2: { played: 0, won: 0 }, 3: { played: 0, won: 0 },
+                4: { played: 0, won: 0 }, 5: { played: 0, won: 0 }
+            };
+        }
+        if (!stats.lengthStats) {
+            stats.lengthStats = {
+                5: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 } },
+                6: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, fail: 0 } },
+                7: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, fail: 0 } },
+                8: { played: 0, won: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, fail: 0 } }
+            };
         }
         return stats;
     }
@@ -66,25 +108,74 @@ window.PersistenceManager = class PersistenceManager {
         }
     }
 
-    static updateStats(victory, guessCount, mode = 'general', length = 5) {
+    static updateStats(victory, guessCount, mode = 'general', length = 5, difficulty = 2) {
         const stats = this.loadStats();
         const today = this.getTodayString();
 
-        // 1. Check Continuity First
+        // --- DAILY MODE GUARD ---
+        if (mode === 'daily') {
+            // Reset daily progress if it's a new day
+            if (stats.dailyProgress.date !== today) {
+                stats.dailyProgress = { date: today, completed: [], attempted: [] };
+            }
+
+            // Check if already attempted/completed to avoid double counting
+            // Note: We track 'attempted' to lock stats for that word length for the day
+            if (stats.dailyProgress.attempted.includes(length)) {
+                console.log(`Daily ${length} already attempted today. Stats will not update.`);
+                // Return stats as is, do not save changes
+                return stats;
+            }
+
+            // Mark as attempted
+            stats.dailyProgress.attempted.push(length);
+        }
+
+        // --- CORE STATS UPDATE ---
+
+        // 1. Check Continuity
         this.checkStreakContinuity(stats);
         stats.lastPlayedDate = today;
 
         stats.gamesPlayed++;
 
-        if (mode === 'daily') {
-            // Reset daily progress if it's a new day
-            if (stats.dailyProgress.date !== today) {
-                stats.dailyProgress = { date: today, completed: [] };
+        // 2. Global Guesses
+        if (victory) {
+            stats.gamesWon++;
+            if (stats.guesses[guessCount] !== undefined) {
+                stats.guesses[guessCount]++;
             }
+        } else {
+            stats.guesses['fail']++;
+        }
 
+        // 3. Category Stats
+        if (stats.categoryStats[mode]) {
+            stats.categoryStats[mode].played++;
+            if (victory) stats.categoryStats[mode].won++;
+        }
+
+        // 4. Difficulty Stats (General Only usually)
+        if (difficulty && stats.difficultyStats[difficulty]) {
+            stats.difficultyStats[difficulty].played++;
+            if (victory) stats.difficultyStats[difficulty].won++;
+        }
+
+        // 5. Length Stats (New)
+        if (stats.lengthStats && stats.lengthStats[length]) {
+            const lStat = stats.lengthStats[length];
+            lStat.played++;
             if (victory) {
-                stats.gamesWon++;
+                lStat.won++;
+                if (lStat.guesses[guessCount] !== undefined) lStat.guesses[guessCount]++;
+            } else {
+                if (lStat.guesses['fail'] !== undefined) lStat.guesses['fail']++;
+            }
+        }
 
+        // --- DAILY SPECIFIC LOGIC (Streaks) ---
+        if (mode === 'daily') {
+            if (victory) {
                 // Track completion
                 if (!stats.dailyProgress.completed.includes(length)) {
                     stats.dailyProgress.completed.push(length);
@@ -94,7 +185,6 @@ window.PersistenceManager = class PersistenceManager {
                 const required = [5, 6, 7, 8];
                 const allDone = required.every(l => stats.dailyProgress.completed.includes(l));
 
-                // Strict Rule: Increment ONLY if all 4 are done AND not already incremented today
                 if (allDone && !stats.dailyProgress.streakIncremented) {
                     console.log("Daily Grand Slam! Streak incremented.");
                     stats.currentStreak++;
@@ -103,34 +193,10 @@ window.PersistenceManager = class PersistenceManager {
                         stats.maxStreak = stats.currentStreak;
                     }
                 }
-
-                if (stats.guesses[guessCount] !== undefined) {
-                    stats.guesses[guessCount]++;
-                }
             } else {
-                // LOSS in Daily
-
-                // CHECK: Did they already complete this length today?
-                if (stats.dailyProgress.completed.includes(length)) {
-                    console.log(`Daily Challenge (Length ${length}) lost, but already completed today. Streak safe.`);
-                    // Do nothing to streak.
-                } else {
-                    // Strict Streak Reset
-                    console.log("Daily Challenge Lost (New Level)! Streak reset to 0.");
-                    stats.currentStreak = 0;
-                }
-
-                stats.guesses['fail']++;
-            }
-        } else {
-            // General Mode - Just stats, no streak impact
-            if (victory) {
-                stats.gamesWon++;
-                if (stats.guesses[guessCount] !== undefined) {
-                    stats.guesses[guessCount]++;
-                }
-            } else {
-                stats.guesses['fail']++;
+                // LOSS in Daily -> Reset Streak
+                console.log("Daily Challenge Lost! Streak reset to 0.");
+                stats.currentStreak = 0;
             }
         }
 
